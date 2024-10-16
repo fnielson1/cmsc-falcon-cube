@@ -2,15 +2,6 @@
 #include "definitions.h"
 
 
-/* Update the SSID, password, IP address, gateway, and subnet mask here */
-const char ssid[] = "Monkey";
-const char pass[] = "nielsonfamilyhome";
-IPAddress localIP(192, 168, 2, 35);
-IPAddress gateway(192, 168, 2, 1);
-IPAddress subnet(255, 255, 255, 0);
-
-
-
 void connectToWifiAndTransmitSignal() {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.print("Connecting to wifi");
@@ -36,11 +27,23 @@ void connectToWifiAndTransmitSignal() {
 
     digitalWrite(LED_PIN, HIGH);
   }
+  else {
+    Serial.println("Failed to connect to wifi.");
+    Serial.println("Wifi stats:");
+    Serial.println(WiFi.status());
+  }
 }
+
 
 void setupWifi()
 {
   WiFi.mode(WIFI_STA);
+  #ifdef IS_CUBE
+    IPAddress localIP = cubeIP;
+  #else
+    IPAddress localIP = remoteControllerIP;
+  #endif
+
   if (!WiFi.config(localIP, gateway, subnet))
   {
     Serial.println("STA Failed to configure");
