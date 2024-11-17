@@ -6,8 +6,12 @@
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
-  pinMode(SPEAKER_PIN, OUTPUT);
-  pinMode(ALARM_PIN, INPUT_PULLUP);
+  pinMode(LED_PIN_1, OUTPUT);
+  pinMode(LED_PIN_2, OUTPUT);
+  pinMode(LED_PIN_3, OUTPUT);
+  pinMode(LED_PIN_4, OUTPUT);
+  pinMode(SPEAKER_OUTPUT_PIN, OUTPUT);
+  pinMode(ALARM_BUTTON_PIN, INPUT_PULLUP);
 
   Serial.begin(9600);
 
@@ -28,7 +32,7 @@ void setup() {
 
 void loop() {
   #ifndef IS_CUBE
-    int shouldNotAlarm = digitalRead(ALARM_PIN);
+    int shouldNotAlarm = digitalRead(ALARM_BUTTON_PIN);
     Serial.print(F("Should not alarm: "));
     Serial.println(shouldNotAlarm);
 

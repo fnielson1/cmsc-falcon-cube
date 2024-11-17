@@ -3,8 +3,12 @@
 #include <ESP8266WiFi.h>
 
 #define LED_PIN LED_BUILTIN
-#define SPEAKER_PIN SDA
-#define ALARM_PIN SCL
+#define LED_PIN_1 D5 
+#define LED_PIN_2 D6 
+#define LED_PIN_3 D7 
+#define LED_PIN_4 D8
+#define SPEAKER_OUTPUT_PIN SDA
+#define ALARM_BUTTON_PIN SCL 
 
 #define WIFI_MAX_CONNECT_ATTEMPTS 10 
 #define WIFI_SLEEP_MS 500
@@ -12,7 +16,7 @@
 
 /* -------------- SETTINGS TO CHANGE BELOW --------------------- */
 // Comment this out if you are programming the controller instead of the cube.
-// #define IS_CUBE
+#define IS_CUBE
 
 
 /* ------------ REMOTE ----------- */
