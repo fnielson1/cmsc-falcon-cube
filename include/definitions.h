@@ -16,7 +16,7 @@
 
 /* -------------- SETTINGS TO CHANGE BELOW --------------------- */
 // Comment this out if you are programming the controller instead of the cube.
-#define IS_CUBE
+// #define IS_CUBE
 
 
 /* ------------ REMOTE ----------- */

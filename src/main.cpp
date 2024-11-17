@@ -37,8 +37,10 @@ void loop() {
     Serial.println(shouldNotAlarm);
 
     if (!shouldNotAlarm) {
+      digitalWrite(LED_PIN, LOW);
       sendAction(ALARM_URL);
     }
+    digitalWrite(LED_PIN, HIGH);
     delay(500); // Do we even need to loop this frequently? Does it matter?
   #endif
 }

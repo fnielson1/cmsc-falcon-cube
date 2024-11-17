@@ -43,6 +43,8 @@ void sendAction(String url) {
     {
       Serial.print(F("Connect failed: "));
       Serial.println(statusCode);
+      Serial.println(F("Attempting to reconnect"));
+      setupWifi();
     }
   #endif 
  }
