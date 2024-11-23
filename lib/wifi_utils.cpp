@@ -95,6 +95,7 @@ void setupWifi()
     Serial.println(F("Failed to connect to wifi."));
     Serial.println(F("Wifi status:"));
     Serial.println(wifiStatusToString(WiFi.status()));
+    setupWifi();
   }
 }
 
