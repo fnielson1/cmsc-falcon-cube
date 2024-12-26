@@ -1,7 +1,9 @@
 #include <Arduino.h>
+#include <SPI.h>
 #include "definitions.h"
 #include "../lib/wifi_utils.cpp"
 #include "../lib/speaker_utils.cpp"
+#include "../lib/radio_utils.cpp"
 
 
 void setup() {
@@ -20,10 +22,11 @@ void setup() {
   {
   }
 
-  setupWifi();
+  // setupWifi(); Cannot connect to 5Ghz wifi
+  setupRadio();
 
   #ifdef IS_CUBE
-    setupServer();
+    // setupServer(); Cannot connect to 5Ghz wifi
   #endif
 
   Serial.println("");
@@ -31,16 +34,25 @@ void setup() {
 }
 
 void loop() {
-  #ifndef IS_CUBE
+  checkForFailure();
+
+  #ifdef IS_CUBE
+    receiveMessage();
+    delay(5);
+  #else
     int shouldNotAlarm = digitalRead(ALARM_BUTTON_PIN);
     Serial.print(F("Should not alarm: "));
     Serial.println(shouldNotAlarm);
 
+    // Debug
+    sendMessage(ALARM_URL);
+
     if (!shouldNotAlarm) {
       digitalWrite(LED_PIN, LOW);
-      sendAction(ALARM_URL);
+      // sendAction(ALARM_URL); // Cannot connect to 5Ghz wifi
+      sendMessage(ALARM_URL);
     }
     digitalWrite(LED_PIN, HIGH);
-    delay(500); // Do we even need to loop this frequently? Does it matter?
+    delay(500);
   #endif
 }

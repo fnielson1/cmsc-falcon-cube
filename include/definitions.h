@@ -16,7 +16,7 @@
 
 /* -------------- SETTINGS TO CHANGE BELOW --------------------- */
 // Comment this out if you are programming the controller instead of the cube.
-// #define IS_CUBE
+#define IS_CUBE
 
 
 /* ------------ REMOTE ----------- */
@@ -31,7 +31,7 @@ const char cubeIP[] = "192.168.2.36";
 IPAddress cubeIPAddress;
 
 // Change the speaker timing (if you like)
-#define ALARM_ITERATIONS 10
+#define ALARM_ITERATIONS 10 // FYI 20 iterations appears to be too much and causes the uC to crash
 #define SPEAKER_OFF_MS 100
 #define SPEAKER_ON_MS 50
 
