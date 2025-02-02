@@ -13,7 +13,7 @@ void setupRadio() {
   radio.begin();                  // Starting the Wireless communication
   radio.setDataRate(RF24_250KBPS);
   // radio.setPALevel(RF24_PA_MIN); // You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
-  radio.setPALevel(RF24_PA_MAX); // You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
+  radio.setPALevel(RF24_PA_MIN); // You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
   radio.failureDetected = 0; // Reset the detection value
 
   #ifdef IS_CUBE
@@ -25,29 +25,67 @@ void setupRadio() {
   #endif
 }
 
+void blinkFailure() {
+  digitalWrite(LED_PIN, HIGH);
+  delay(100);
+  digitalWrite(LED_PIN, LOW);
+  delay(100);
+  digitalWrite(LED_PIN, HIGH);
+  Serial.println("");
+  delay(1000);
+}
+
 void checkForFailure() {
   if (radio.failureDetected) {
     Serial.println(F("Radio failure detected"));
+    blinkFailure();
     setupRadio();
-    digitalWrite(LED_PIN, HIGH);
-    delay(100);
-    digitalWrite(LED_PIN, LOW);
-    delay(100);
-    digitalWrite(LED_PIN, HIGH);
-    delay(1000);
   }
 }
 
-void sendMessage(String msg) {
+void sendMessage(String strMsg) {
   Serial.print(F("Sending message: "));
-  Serial.println(msg);
+  Serial.println(strMsg);
   boolean buttonState = true;
-  radio.write(&buttonState, sizeof(buttonState)); // Sending the message to receiver
+
+  const char* charMsg = strMsg.c_str();
+
+  digitalWrite(LED_PIN, LOW);
+  radio.write(&charMsg, sizeof(charMsg)); // Sending the message to receiver
+
+  boolean txOk = false;
+  boolean txFail = false;
+  boolean rxReady = false;
+
+  radio.whatHappened(txOk, txFail, rxReady);
+
+  if (!txOk) {
+    Serial.println("Tx failed to send");
+    blinkFailure();
+  }
+
+  if (txFail) {
+    Serial.println(F("Tx failed to be acked\n"));
+  }
+
+  delay(500);
+  digitalWrite(LED_PIN, HIGH);
 }
 
 void receiveMessage() {
+  boolean txOk = false;
+  boolean txFail = true;
+  boolean rxReady = false;
+
+  radio.whatHappened(txOk, txFail, rxReady);
+
+  if (!rxReady) {
+    Serial.println(F("Rx not ready"));
+    blinkFailure();
+  }
+
   if (radio.available()) {
-    char msg[sizeof(boolean)];
+    char msg[6];
     radio.read(&msg, sizeof(msg)); // Reading the message off the SPI bus
 
     Serial.print(F("Received message: "));
@@ -55,5 +93,6 @@ void receiveMessage() {
   }
   else {
     Serial.println(F("Radio isn't available for listening"));
+    blinkFailure();
   }
 }
