@@ -4,10 +4,15 @@
 #include <RF24.h>
 #include "definitions.h"
 #include "radio_utils.h"
+#include "speaker_utils.h"
+
 
 RF24 radio(PIN_CE, PIN_CSN); // CE, CSN
 
 
+/**
+ * Blink the LEDs if there is a failure
+ */
 void blinkFailure() {
   digitalWrite(LED_PIN, HIGH);
   delay(100);
@@ -18,6 +23,9 @@ void blinkFailure() {
   delay(1000);
 }
 
+/**
+ * Setup the radio to get it ready to listen or transmit
+ */
 void setupRadio() {
   // Starting the Wireless communication
   while (!radio.begin()) {                   
@@ -39,6 +47,9 @@ void setupRadio() {
   #endif
 }
 
+/**
+ * Check if there is a radio failure
+ */
 void checkForFailure() {
   if (radio.failureDetected) {
     Serial.println(F("\nRadio failure detected\n"));
@@ -47,12 +58,15 @@ void checkForFailure() {
   }
 }
 
+/**
+ * Send a message
+ */
 void sendMessage(String strMsg) {
-  Serial.print(F("Sending message: "));
-  Serial.println(strMsg);
-  boolean buttonState = true;
+  char charMsg[MAX_MESSAGE_SIZE] = "";
+  strncpy(charMsg, strMsg.c_str(), sizeof(charMsg));
 
-  const char* charMsg = strMsg.c_str();
+  Serial.print(F("Sending message: "));
+  Serial.println(charMsg);
 
   digitalWrite(LED_PIN, LOW);
   radio.write(&charMsg, sizeof(charMsg)); // Sending the message to receiver
@@ -63,41 +77,51 @@ void sendMessage(String strMsg) {
 
   radio.whatHappened(txOk, txFail, rxReady);
 
-  if (!txOk) {
-    Serial.println("Tx failed to send");
+  if (txFail) {
+    Serial.println(F("Tx failed to be acked\n"));
+
+    if (!txOk) {
+      Serial.println("Tx failed to send");
+    }
     blinkFailure();
   }
 
-  if (txFail) {
-    Serial.println(F("Tx failed to be acked\n"));
-  }
-
-  delay(500);
   digitalWrite(LED_PIN, HIGH);
 }
 
-void receiveMessage() {
-  boolean txOk = false;
-  boolean txFail = true;
-  boolean rxReady = false;
+/**
+ * Determine the action to take based on the message contents
+ */
+void determineAction(char* msgArg) {
+  String msg = String(msgArg);
 
+  if (msg.compareTo(ALARM_URL)) {
+    playAlarmAndLights();
+  }
+}
+
+/**
+ * Check if we've received a message
+ */
+void receiveMessage() {
   if (radio.available()) {
-    char msg[MAX_MESSAGE_SIZE];
+    radio.closeReadingPipe(0); // Don't get anymore requests until the alarm is done
+
+    char msg[MAX_MESSAGE_SIZE] = "";
     radio.read(&msg, sizeof(msg)); // Reading the message off the SPI bus
+
+    radio.flush_rx(); // Flush the buffer of any extra messages
 
     Serial.print(F("Received message: "));
     Serial.println(msg);
-    delay(500);
+
+    determineAction(msg);
+
+    playAlarmAndLights();
+
+    radio.openReadingPipe(0, RADIO_ADDRESS);
   }
   else {
-    Serial.println(F("Radio isn't available for listening"));
-
-    radio.whatHappened(txOk, txFail, rxReady);
-
-    if (!rxReady)
-    {
-      Serial.println(F("Rx not ready"));
-    }
-    blinkFailure();
+    Serial.println(F("No message received"));
   }
 }

@@ -7,11 +7,13 @@
 #define LED_PIN_2 D6 
 #define LED_PIN_3 D7 
 #define LED_PIN_4 D8
-#define SPEAKER_OUTPUT_PIN SDA
-#define ALARM_BUTTON_PIN SCL 
+#define SPEAKER_OUTPUT_PIN 5
+#define ALARM_BUTTON_PIN 2
 
 #define WIFI_MAX_CONNECT_ATTEMPTS 10 
 #define WIFI_SLEEP_MS 500
+
+const String ALARM_URL = "/alarm";
 
 
 /* -------------- SETTINGS TO CHANGE BELOW --------------------- */

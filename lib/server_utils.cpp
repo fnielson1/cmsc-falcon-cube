@@ -5,9 +5,6 @@
 
 AsyncWebServer server(80);
 
-const String ALARM_URL = "/alarm";
-
-
 
 void notFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", F("404 Not found"));

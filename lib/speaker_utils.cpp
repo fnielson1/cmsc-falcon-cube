@@ -2,10 +2,11 @@
 
 
 void playAlarmAndLights() {
+  Serial.println(F("Playing speaker"));
+
   for (int i = 0; i < ALARM_ITERATIONS; i++) {
     delay(SPEAKER_OFF_MS);
 
-    Serial.println(F("SPEAKER ON"));
     digitalWrite(LED_PIN, LOW); // This has inverse logic (I don't know why)
     digitalWrite(LED_PIN_1, HIGH);
     digitalWrite(LED_PIN_2, HIGH);
@@ -15,7 +16,6 @@ void playAlarmAndLights() {
 
     delay(SPEAKER_ON_MS);
 
-    Serial.println(F("SPEAKER OFF"));
     digitalWrite(LED_PIN, HIGH);
     digitalWrite(LED_PIN_1, LOW);
     digitalWrite(LED_PIN_2, LOW);
@@ -23,4 +23,6 @@ void playAlarmAndLights() {
     digitalWrite(LED_PIN_4, LOW);
     digitalWrite(SPEAKER_OUTPUT_PIN, LOW);
   }
+
+  Serial.println(F("Stopping speaker"));
 }

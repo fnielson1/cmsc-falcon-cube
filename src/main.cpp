@@ -12,8 +12,8 @@ void setup() {
   // pinMode(LED_PIN_2, OUTPUT);
   // pinMode(LED_PIN_3, OUTPUT);
   // pinMode(LED_PIN_4, OUTPUT);
-  // pinMode(SPEAKER_OUTPUT_PIN, OUTPUT);
-  // pinMode(ALARM_BUTTON_PIN, INPUT_PULLUP);
+  pinMode(SPEAKER_OUTPUT_PIN, OUTPUT);
+  pinMode(ALARM_BUTTON_PIN, INPUT_PULLUP);
 
   Serial.begin(9600);
 
@@ -40,13 +40,11 @@ void loop() {
 
   #ifdef IS_CUBE
     receiveMessage();
+    delay(500);
   #else
     int shouldNotAlarm = digitalRead(ALARM_BUTTON_PIN);
     Serial.print(F("Should not alarm: "));
     Serial.println(shouldNotAlarm);
-
-    // Debug
-    sendMessage(ALARM_URL);
 
     if (!shouldNotAlarm) {
       digitalWrite(LED_PIN, LOW);
@@ -54,6 +52,6 @@ void loop() {
       sendMessage(ALARM_URL);
     }
     digitalWrite(LED_PIN, HIGH);
-    delay(1000);
+    delay(100);
   #endif
 }
