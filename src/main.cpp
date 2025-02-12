@@ -37,7 +37,6 @@ void loop() {
 
   #ifdef IS_CUBE
     receiveMessage();
-    delay(500);
   #else
     int shouldNotAlarm = digitalRead(ALARM_BUTTON_PIN);
     Serial.print(F("Should not alarm: "));
