@@ -8,28 +8,25 @@
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
+
+  #ifdef IS_CUBE
   // pinMode(LED_PIN_1, OUTPUT);
   // pinMode(LED_PIN_2, OUTPUT);
   // pinMode(LED_PIN_3, OUTPUT);
   // pinMode(LED_PIN_4, OUTPUT);
-  pinMode(SPEAKER_OUTPUT_PIN, OUTPUT);
-  pinMode(ALARM_BUTTON_PIN, INPUT_PULLUP);
+    pinMode(SPEAKER_OUTPUT_PIN, OUTPUT);
+  #else
+    // setupServer(); Cannot connect to 5Ghz wifi
+    pinMode(ALARM_BUTTON_PIN, INPUT_PULLUP); // No need to use the alarm button pin if we are the cube
+  #endif
+
 
   Serial.begin(9600);
-
-  // Wait for serial to initialize.
-  while (!Serial)
-  {
-  }
 
   digitalWrite(LED_PIN, HIGH);
 
   // setupWifi(); Cannot connect to 5Ghz wifi
   setupRadio();
-
-  #ifdef IS_CUBE
-    // setupServer(); Cannot connect to 5Ghz wifi
-  #endif
 
   Serial.println("");
   Serial.println("Started up");
@@ -52,6 +49,6 @@ void loop() {
       sendMessage(ALARM_URL);
     }
     digitalWrite(LED_PIN, HIGH);
-    delay(100);
+    delay(10);
   #endif
 }

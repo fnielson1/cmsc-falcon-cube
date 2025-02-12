@@ -20,17 +20,7 @@ const String ALARM_URL = "/alarm";
 // Comment this out if you are programming the controller instead of the cube.
 #define IS_CUBE
 
-
-/* ------------ REMOTE ----------- */
-// Remote controller IP address (change as needed)
-const char remoteControllerIP[] = "192.168.2.35";
-IPAddress remoteControllerIPAddress;
-
-
-/* ------------ CUBE ----------- */
-// The IP address of the cube (change as needed)
-const char cubeIP[] = "192.168.2.36";
-IPAddress cubeIPAddress;
+// ------------ CUBE ----------- 
 
 // Change the speaker timing (if you like)
 #define ALARM_ITERATIONS 10 // FYI 20 iterations appears to be too much and causes the uC to crash
@@ -38,7 +28,22 @@ IPAddress cubeIPAddress;
 #define SPEAKER_ON_MS 50
 
 
-/* ----------- SHARED ------------ */
+// !IMPORTANT! The settings below are no longer used as the uC cannot connect to a 5Ghz wifi.
+
+
+// ------------ REMOTE ----------- 
+// Remote controller IP address (change as needed)
+const char remoteControllerIP[] = "192.168.2.35";
+IPAddress remoteControllerIPAddress;
+
+
+// ------------ CUBE ----------- 
+// The IP address of the cube (change as needed)
+const char cubeIP[] = "192.168.2.36";
+IPAddress cubeIPAddress;
+
+
+// ----------- SHARED ------------ 
 const char ssid[] = "network_name"; // SSID (also called the Network name or Wifi name)
 const char pass[] = "password"; // Wifi password
 
