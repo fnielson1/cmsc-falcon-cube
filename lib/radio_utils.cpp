@@ -5,25 +5,8 @@
 #include "definitions.h"
 #include "radio_utils.h"
 
-
 RF24 radio(PIN_CE, PIN_CSN); // CE, CSN
 
-
-void setupRadio() {
-  radio.begin();                  // Starting the Wireless communication
-  radio.setDataRate(RF24_250KBPS);
-  // radio.setPALevel(RF24_PA_MIN); // You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
-  radio.setPALevel(RF24_PA_MIN); // You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
-  radio.failureDetected = 0; // Reset the detection value
-
-  #ifdef IS_CUBE
-    radio.openReadingPipe(0, RADIO_ADDRESS); // Setting the address at which we will receive the data
-    radio.startListening(); // This sets the module as receiver
-  #else
-    radio.openWritingPipe(RADIO_ADDRESS); // Setting the address where we will send the data
-    radio.stopListening(); // This sets the module as transmitter
-  #endif
-}
 
 void blinkFailure() {
   digitalWrite(LED_PIN, HIGH);
@@ -35,9 +18,30 @@ void blinkFailure() {
   delay(1000);
 }
 
+void setupRadio() {
+  // Starting the Wireless communication
+  while (!radio.begin()) {                   
+    Serial.println(F("nRF24L01 not found"));
+    blinkFailure();
+  }
+
+  radio.setDataRate(RF24_250KBPS);
+  // radio.setPALevel(RF24_PA_MIN); // You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
+  radio.setPALevel(RF24_PA_MAX); // You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
+  radio.failureDetected = 0; // Reset the detection value
+
+  #ifdef IS_CUBE
+    radio.openReadingPipe(0, RADIO_ADDRESS); // Setting the address at which we will receive the data
+    radio.startListening(); // This sets the module as receiver
+  #else
+    radio.openWritingPipe(RADIO_ADDRESS); // Setting the address where we will send the data
+    radio.stopListening(); // This sets the module as transmitter
+  #endif
+}
+
 void checkForFailure() {
   if (radio.failureDetected) {
-    Serial.println(F("Radio failure detected"));
+    Serial.println(F("\nRadio failure detected\n"));
     blinkFailure();
     setupRadio();
   }
@@ -77,22 +81,23 @@ void receiveMessage() {
   boolean txFail = true;
   boolean rxReady = false;
 
-  radio.whatHappened(txOk, txFail, rxReady);
-
-  if (!rxReady) {
-    Serial.println(F("Rx not ready"));
-    blinkFailure();
-  }
-
   if (radio.available()) {
-    char msg[6];
+    char msg[MAX_MESSAGE_SIZE];
     radio.read(&msg, sizeof(msg)); // Reading the message off the SPI bus
 
     Serial.print(F("Received message: "));
     Serial.println(msg);
+    delay(500);
   }
   else {
     Serial.println(F("Radio isn't available for listening"));
+
+    radio.whatHappened(txOk, txFail, rxReady);
+
+    if (!rxReady)
+    {
+      Serial.println(F("Rx not ready"));
+    }
     blinkFailure();
   }
 }
